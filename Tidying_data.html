@@ -178,6 +178,196 @@ catch_df$catch_thousands[i]</code></pre>
 ## 8538    NOP 1995    Chum              99  99000
 ## 8539    NOP 1996    Chum              68  68000
 ## 8540    NOP 1997    Chum              97  97000</code></pre>
+<div id="split-apply-combine" class="section level1">
+<h1>Split-Apply-Combine</h1>
+<pre class="r"><code>catch_summarize &lt;- catch_df %&gt;%
+  group_by(Region) %&gt;% 
+  summarize(mean_catch = mean(catch))
+print(catch_summarize, 10)</code></pre>
+<pre><code>## # A tibble: 18 x 2
+##    Region mean_catch
+##    &lt;chr&gt;       &lt;dbl&gt;
+##  1 ALU        40384.
+##  2 BER        16373.
+##  3 BRB      2709796.
+##  4 CHG       315487.
+##  5 CKI       683571.
+##  6 COP       179223.
+##  7 GSE           NA 
+##  8 KOD      1528350 
+##  9 KSK        67642.
+## 10 KTZ        18836.
+## 11 NOP       229493.
+## 12 NRS        51503.
+## 13 NSE      1825021.
+## 14 PWS      1419237.
+## 15 SOP      1110942.
+## 16 SSE      3184661.
+## 17 YAK        91923.
+## 18 YUK        68646.</code></pre>
+<pre class="r"><code>catch_summarize &lt;- catch_df %&gt;% 
+  group_by(Year) %&gt;% 
+  summarize(mean_catch = mean(catch))
+print(catch_summarize, 10)</code></pre>
+<pre><code>## # A tibble: 120 x 2
+##     Year mean_catch
+##    &lt;int&gt;      &lt;dbl&gt;
+##  1  1878          0
+##  2  1879          0
+##  3  1880          0
+##  4  1881          0
+##  5  1882       5900
+##  6  1883      19800
+##  7  1884      21250
+##  8  1885      24750
+##  9  1886      30560
+## 10  1887      52120
+## # ... with 110 more rows</code></pre>
+<pre class="r"><code>catch_range &lt;- catch_df %&gt;% 
+  group_by(Region) %&gt;% 
+  summarize(catch_low = range(catch)[1], catch_high = range(catch)[2])
+
+print (catch_range)</code></pre>
+<pre><code>## # A tibble: 18 x 3
+##    Region catch_low catch_high
+##    &lt;chr&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+##  1 ALU            0    2597000
+##  2 BER            0     419000
+##  3 BRB            0   44269000
+##  4 CHG            0    2997000
+##  5 CKI            0    9718000
+##  6 COP            0    2986000
+##  7 GSE           NA         NA
+##  8 KOD            0   42849000
+##  9 KSK            0    1447000
+## 10 KTZ            0     677000
+## 11 NOP            0    3867000
+## 12 NRS            0     982000
+## 13 NSE            0   36573000
+## 14 PWS            0   44163000
+## 15 SOP            0   16312000
+## 16 SSE            0   53676000
+## 17 YAK            0     761000
+## 18 YUK            0    1473000</code></pre>
+<pre class="r"><code>catch_range &lt;- catch_df %&gt;% 
+  group_by(Region) %&gt;% 
+  summarize(catch_low = range(catch)[1], catch_high = range(catch)[2])
+
+print (catch_range)</code></pre>
+<pre><code>## # A tibble: 18 x 3
+##    Region catch_low catch_high
+##    &lt;chr&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+##  1 ALU            0    2597000
+##  2 BER            0     419000
+##  3 BRB            0   44269000
+##  4 CHG            0    2997000
+##  5 CKI            0    9718000
+##  6 COP            0    2986000
+##  7 GSE           NA         NA
+##  8 KOD            0   42849000
+##  9 KSK            0    1447000
+## 10 KTZ            0     677000
+## 11 NOP            0    3867000
+## 12 NRS            0     982000
+## 13 NSE            0   36573000
+## 14 PWS            0   44163000
+## 15 SOP            0   16312000
+## 16 SSE            0   53676000
+## 17 YAK            0     761000
+## 18 YUK            0    1473000</code></pre>
+<pre class="r"><code>catch_mean &lt;- catch_df %&gt;% 
+  group_by(Region) %&gt;% 
+  # calculate mean, sd, n
+  summarize (catch_mean = mean(catch,na.rm = T),
+             catch_stdev = sd(catch, na.rm = T),
+             num_obs = n())
+ head(catch_mean)</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   Region catch_mean catch_stdev num_obs
+##   &lt;chr&gt;       &lt;dbl&gt;       &lt;dbl&gt;   &lt;int&gt;
+## 1 ALU        40384.     223402.     435
+## 2 BER        16373.      41542.     510
+## 3 BRB      2709796.    6554344.     570
+## 4 CHG       315487.     508517.     550
+## 5 CKI       683571.    1089900.     525
+## 6 COP       179223.     337259.     470</code></pre>
+<pre class="r"><code>catch_mean &lt;- catch_df %&gt;% 
+  group_by(Region, species) %&gt;% 
+  # calculate mean, sd, n
+  summarize (catch_mean = mean(catch,na.rm = T),
+             catch_stdev = sd(catch, na.rm = T),
+             num_obs = n())
+ head(catch_mean)</code></pre>
+<pre><code>## # A tibble: 6 x 5
+## # Groups:   Region [2]
+##   Region species catch_mean catch_stdev num_obs
+##   &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt;       &lt;dbl&gt;   &lt;int&gt;
+## 1 ALU    Chinook       23.0        214.      87
+## 2 ALU    Chum        2908.       11362.      87
+## 3 ALU    Coho         195.         729.      87
+## 4 ALU    Pink      191954.      471615.      87
+## 5 ALU    Sockeye     6839.       15187.      87
+## 6 BER    Chinook       19.6        139.     102</code></pre>
+<pre class="r"><code>catch_mean &lt;- catch_df %&gt;% 
+  group_by(Region, species) %&gt;% 
+  # calculate mean, sd, n
+  summarize (catch_mean = mean(catch,na.rm = T),
+             catch_stdev = sd(catch, na.rm = T),
+             num_obs = n()) %&gt;% 
+#filter for Chinook
+filter(species == &quot;Chinook&quot;)
+ head(catch_mean)</code></pre>
+<pre><code>## # A tibble: 6 x 5
+## # Groups:   Region [6]
+##   Region species catch_mean catch_stdev num_obs
+##   &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt;       &lt;dbl&gt;   &lt;int&gt;
+## 1 ALU    Chinook       23.0        214.      87
+## 2 BER    Chinook       19.6        139.     102
+## 3 BRB    Chinook    76211.       52222.     114
+## 4 CHG    Chinook     1536.        2540.     110
+## 5 CKI    Chinook    43876.       33859.     105
+## 6 COP    Chinook    19798.       14352.      94</code></pre>
+<div style="white-space: pre-line;">is the same as “or”</div>
+<p>Joins Read in regions definition file</p>
+<pre class="r"><code>region_defs &lt;- read.csv(url(&quot;https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1&quot;, method = &quot;libcurl&quot;),
+                        stringsAsFactors = FALSE)
+head(region_defs)</code></pre>
+<pre><code>##      code                                  mgmtArea areaClass regionCode
+## 1     GSE              Unallocated Southeast Alaska  mgmtArea          1
+## 2     NSE                 Northern Southeast Alaska  mgmtArea          1
+## 3     SSE                 Southern Southeast Alaska  mgmtArea          1
+## 4     YAK                                   Yakutat  mgmtArea          1
+## 5 PWSmgmt      Prince William Sound Management Area  mgmtArea          2
+## 6     BER Bering River Subarea Copper River Subarea   subarea          2
+##                                                                                                                                                                                     notes
+## 1                                                            Included are Southeastern Alaska catches which could not be assigned\nto Northern or Southern Southeastern Alaska or Yakutat
+## 2 Northern Southern Alaska includes Districts 9 through 16 from summer straight northwest to and including the fairweather Grounds but excludes Yakutat fisheries unless otherwise noted.
+## 3                                                                                                                                                                                        
+## 4                                                                                                                                                                                        
+## 5                                                                                                            Includes the Bering River and Copper River and Prince William Sound Subareas
+## 6</code></pre>
+<pre class="r"><code>region_defs &lt;- region_defs %&gt;% 
+  select(code, mgmtArea)
+
+head(region_defs)</code></pre>
+<pre><code>##      code                                  mgmtArea
+## 1     GSE              Unallocated Southeast Alaska
+## 2     NSE                 Northern Southeast Alaska
+## 3     SSE                 Southern Southeast Alaska
+## 4     YAK                                   Yakutat
+## 5 PWSmgmt      Prince William Sound Management Area
+## 6     BER Bering River Subarea Copper River Subarea</code></pre>
+<pre class="r"><code>catch_joined &lt;- left_join(catch_df, region_defs, by = c(&quot;Region&quot; = &quot;code&quot;))
+head(catch_joined)</code></pre>
+<pre><code>##   Region Year species catch_thousands catch                  mgmtArea
+## 1    SSE 1886 Chinook               0     0 Southern Southeast Alaska
+## 2    SSE 1887 Chinook               0     0 Southern Southeast Alaska
+## 3    SSE 1888 Chinook               0     0 Southern Southeast Alaska
+## 4    SSE 1889 Chinook               0     0 Southern Southeast Alaska
+## 5    SSE 1890 Chinook               0     0 Southern Southeast Alaska
+## 6    SSE 1891 Chinook               0     0 Southern Southeast Alaska</code></pre>
+<p>To move mgmtArea to left, use select</p>
+</div>
 
 
 

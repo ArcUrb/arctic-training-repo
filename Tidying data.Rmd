@@ -59,7 +59,97 @@ tail(catch_df)
 
 ```
 
+#Split-Apply-Combine
 
+```{r}
+catch_summarize <- catch_df %>%
+  group_by(Region) %>% 
+  summarize(mean_catch = mean(catch))
+print(catch_summarize, 10)
+
+```
+
+```{r}
+catch_summarize <- catch_df %>% 
+  group_by(Year) %>% 
+  summarize(mean_catch = mean(catch))
+print(catch_summarize, 10)
+
+```
+
+```{r}
+catch_range <- catch_df %>% 
+  group_by(Region) %>% 
+  summarize(catch_low = range(catch)[1], catch_high = range(catch)[2])
+
+print (catch_range)
+````
+
+```{r}
+catch_range <- catch_df %>% 
+  group_by(Region) %>% 
+  summarize(catch_low = range(catch)[1], catch_high = range(catch)[2])
+
+print (catch_range)
+````
+
+```{r}
+catch_mean <- catch_df %>% 
+  group_by(Region) %>% 
+  # calculate mean, sd, n
+  summarize (catch_mean = mean(catch,na.rm = T),
+             catch_stdev = sd(catch, na.rm = T),
+             num_obs = n())
+ head(catch_mean)
+```
+
+```{r}
+catch_mean <- catch_df %>% 
+  group_by(Region, species) %>% 
+  # calculate mean, sd, n
+  summarize (catch_mean = mean(catch,na.rm = T),
+             catch_stdev = sd(catch, na.rm = T),
+             num_obs = n())
+ head(catch_mean)
+```
+
+```{r}
+catch_mean <- catch_df %>% 
+  group_by(Region, species) %>% 
+  # calculate mean, sd, n
+  summarize (catch_mean = mean(catch,na.rm = T),
+             catch_stdev = sd(catch, na.rm = T),
+             num_obs = n()) %>% 
+#filter for Chinook
+filter(species == "Chinook")
+ head(catch_mean)
+```
+
+| is the same as "or"
+
+Joins
+Read in regions definition file
+
+```{r}
+region_defs <- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.303.1", method = "libcurl"),
+                        stringsAsFactors = FALSE)
+head(region_defs)
+```
+
+```{r}
+region_defs <- region_defs %>% 
+  select(code, mgmtArea)
+
+head(region_defs)
+
+```
+
+```{r}
+catch_joined <- left_join(catch_df, region_defs, by = c("Region" = "code"))
+head(catch_joined)
+```
+
+To move mgmtArea to left, use select
 
 
 
