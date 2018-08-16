@@ -1,5 +1,5 @@
 ---
-title: "My Cool Web Page"
+title: "Cool"
 author: "Robert Orttung"
 date: "August 16, 2018"
 output: html_document
