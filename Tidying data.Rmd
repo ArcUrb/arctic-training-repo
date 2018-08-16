@@ -9,25 +9,56 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+```{r, warning = F, message = F}
+library(dplyr)
+library(tidyr)
+```
+Read in data from Mike Byerly. 2016. Alaska commercial salmon catches by management region (1886- 1997). Gulf of Alaska Data Portal. df35b.304.2.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r}
+catch_df <- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1", method = "libcurl"),
+                    stringsAsFactors = FALSE)
+head(catch_df)
 
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
+%>%   command shift m key word shortcut for the 
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+catch_df <- catch_df %>% 
+  select(Region, Year, Chinook, Sockeye, Coho, Pink, Chum) %>%
+  gather(key = "species",value = "catch",-Region,-Year) %>%
+  rename(catch_thousands = catch)
+head(catch_df)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Reverse of gather is spread
+
+Mutate
+
+```{r}
+catch_integers <- as.integer(catch_df$catch_thousands)
+
+i = which(is.na(catch_integers) == T)
+
+catch_df$catch_thousands[i]
+
+```
+
+need to turn i into 1 in the Thousands column
+coerce catch_thousands into integer type
+convert catch_thousands to catch
+
+```{r}
+catch_df <- catch_df %>% 
+  mutate(catch_thousands = ifelse(catch_thousands == "i", 1, catch_thousands)) %>% 
+  mutate(catch_thousands = as.integer(catch_thousands)) %>% 
+  mutate(catch = catch_thousands * 1000)
+tail(catch_df)
+
+```
+
 
 
 
